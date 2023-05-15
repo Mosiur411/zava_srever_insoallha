@@ -4,7 +4,7 @@ const { AllowedFileTypes, maxFileSize } = require('../utils/constants')
 const { getRandomString } = require('../utils/helpers')
 
 if (!fs.existsSync("./uploads")) {
-  fs.mkdirSync("./uploads")
+  fs.mkdir("./uploads")
 }
 
 const storage = multer.diskStorage({

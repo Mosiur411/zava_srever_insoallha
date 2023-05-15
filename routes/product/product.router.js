@@ -3,7 +3,7 @@ const { addProduct, getProduct, updateProduct, deleteProduct, addBulkProduct } =
 const { upload } = require('../../middleware/files.middleware')
 const productRoutes = Router()
 productRoutes.post('/', addProduct)
-productRoutes.post('/bulk', upload.single('product.csv'), addBulkProduct)
+productRoutes.post('/bulk', addBulkProduct)
 productRoutes.get('/', getProduct)
 productRoutes.put('/', updateProduct)
 productRoutes.delete('/', deleteProduct)

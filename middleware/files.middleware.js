@@ -1,5 +1,5 @@
 const multer = require('multer')
-const fs = require('fs/promises')
+const fs = require('fs')
 const { AllowedFileTypes, maxFileSize } = require('../utils/constants')
 const { getRandomString } = require('../utils/helpers')
 

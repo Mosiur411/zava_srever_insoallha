@@ -24,11 +24,11 @@ app.get('/', (req, res) => {
 })
 /* route    childSubCategories */
 app.use('/', userRoutes)
-app.use('/development', Auth_Rqeuired, developmentRoutes)
-app.use('/categories', Auth_Rqeuired, categoriesRoutes)
-app.use('/subCategories', Auth_Rqeuired, subCategoriesRoutes)
-app.use('/childSubCategories', Auth_Rqeuired, childsubRoutes)
-app.use('/product', Auth_Rqeuired, productRoutes)
+app.use('/development', developmentRoutes)
+app.use('/categories', categoriesRoutes)
+app.use('/subCategories', subCategoriesRoutes)
+app.use('/childSubCategories', childsubRoutes)
+app.use('/product', productRoutes)
 
 // database
 const mongodb_uri = process.env.PROD_DB;

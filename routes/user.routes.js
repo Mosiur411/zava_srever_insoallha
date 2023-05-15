@@ -3,7 +3,7 @@ const { getUser, updateUser, registerUser } = require('../controller/user.contro
 const { Auth_Rqeuired } = require('../middleware/auth.middleware')
 const userRoutes = Router()
 userRoutes.post('/register', registerUser)
-userRoutes.get('/user', Auth_Rqeuired, getUser)
-userRoutes.put('/updateProfile', Auth_Rqeuired, updateUser)
+userRoutes.get('/user', getUser)
+userRoutes.put('/updateProfile', updateUser)
 
 module.exports = { userRoutes }

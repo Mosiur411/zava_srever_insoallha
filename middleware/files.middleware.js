@@ -1,10 +1,10 @@
 const multer = require('multer')
-const fs = require("fs")
+const fs = require('fs/promises')
 const { AllowedFileTypes, maxFileSize } = require('../utils/constants')
 const { getRandomString } = require('../utils/helpers')
 
 if (!fs.existsSync("./uploads")) {
-  fs.mkdir("./uploads")
+  fs.mkdirSync("./uploads")
 }
 
 const storage = multer.diskStorage({

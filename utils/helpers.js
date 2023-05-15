@@ -1,4 +1,4 @@
-const fs = require("fs")
+const fs = require('fs/promises')
 const csv = require("csvtojson")
 const errorMessageFormatter = (err) => {
     return { code: err.code, error: err.message }

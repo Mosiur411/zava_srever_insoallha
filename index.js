@@ -28,7 +28,7 @@ app.use('/development', Auth_Rqeuired, developmentRoutes)
 app.use('/categories', Auth_Rqeuired, categoriesRoutes)
 app.use('/subCategories', Auth_Rqeuired, subCategoriesRoutes)
 app.use('/childSubCategories', Auth_Rqeuired, childsubRoutes)
-app.use('/product', productRoutes)
+app.use('/product', Auth_Rqeuired, productRoutes)
 
 // database
 const mongodb_uri = process.env.PROD_DB;

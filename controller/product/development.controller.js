@@ -35,6 +35,14 @@ const getDevelopment = async (req, res) => {
         return res.status(500).json(errorMessage);
     }
 };
+const updateDepartment = async (req, res) => {
+    const data = req.body;
+    const { _id } = req.query;
+    if (!_id) return res.status(400).json({ Message: 'product Not select ' });
+    const department = await DevelopmentModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+    return res.status(201).json({ department });
+}
+
 const deleteDevelopment = async (req, res) => {
     try {
         const { development_id } = req.query;
@@ -68,5 +76,6 @@ module.exports = {
     addDevelopment,
     getDevelopment,
     deleteDevelopment,
-    doesDepartmentExist
+    doesDepartmentExist,
+    updateDepartment
 };

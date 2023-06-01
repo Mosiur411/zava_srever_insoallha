@@ -36,6 +36,18 @@ const getCategoties = async (req, res) => {
     }
 }
 
+
+
+/* update one  */
+const updateCategoties = async (req, res) => {
+    const data = req.body;
+    const { _id } = req.query;
+    if (!_id) return res.status(400).json({ Message: 'categoties Not select ' });
+    const categoties = await CategorieModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+    return res.status(201).json({ categoties });
+}
+
+
 const deleteCategoties = async (req, res) => {
     try {
         const { categoty_id } = req.query;
@@ -51,7 +63,7 @@ const deleteCategoties = async (req, res) => {
 
 
 module.exports = {
-    addCategoties, getCategoties, deleteCategoties
+    addCategoties, getCategoties, deleteCategoties, updateCategoties
 }
 
 /*   // const result = await DevelopmentModel.aggregate([

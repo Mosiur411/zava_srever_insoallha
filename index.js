@@ -24,10 +24,10 @@ app.get('/', (req, res) => {
 })
 /* route    childSubCategories */
 app.use('/', userRoutes)
-app.use('/development', developmentRoutes)
-app.use('/categories', categoriesRoutes)
-app.use('/subCategories', subCategoriesRoutes)
-app.use('/childSubCategories', childsubRoutes)
+app.use('/development', Auth_Rqeuired, developmentRoutes)
+app.use('/categories', Auth_Rqeuired, categoriesRoutes)
+app.use('/subCategories', Auth_Rqeuired, subCategoriesRoutes)
+app.use('/childSubCategories', Auth_Rqeuired, childsubRoutes)
 app.use('/product', productRoutes)
 
 // database
@@ -35,6 +35,6 @@ const mongodb_uri = process.env.PROD_DB;
 connectDatabase(mongodb_uri)
 initializeFirebase()
 
-app.listen(port,"0.0.0.0", () => {
+app.listen(port, "0.0.0.0", () => {
     console.log(`Example app listening on port ${process.env.PORT}`)
 })

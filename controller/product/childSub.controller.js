@@ -26,12 +26,34 @@ const getChildSubCategoties = async (req, res) => {
         const errorMessage = errorMessageFormatter(err)
         return res.status(500).json(errorMessage)
     }
+}
+
+/* update one  */
+const updateChilSubCategoties = async (req, res) => {
+    const data = req.body;
+    const { _id } = req.query;
+    if (!_id) return res.status(400).json({ Message: 'Chil Sub ategoties Not select ' });
+    const categoties = await SubChildCategorieSchema.findOneAndUpdate({ _id }, { ...data }, { new: true })
+    return res.status(201).json({ categoties });
+}
 
 
+/* Delete  */
+const deleteChildSubCategoties = async (req, res) => {
+    try {
+        const { _id } = req.query;
+        const result = await SubChildCategorieSchema.deleteMany({ _id: { $in: _id } });
+        return res.status(201).json({ result })
+    } catch (err) {
+        const errorMessage = errorMessageFormatter(err)
+        return res.status(500).json(errorMessage)
+    }
 
 }
-const deleteChildSubCategoties = async (req, res) => { }
+
+
+
 
 module.exports = {
-    addChildSubCategoties, getChildSubCategoties, deleteChildSubCategoties
+    addChildSubCategoties, getChildSubCategoties, deleteChildSubCategoties, updateChilSubCategoties
 }

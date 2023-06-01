@@ -43,20 +43,35 @@ const productPrices = new mongoose.Schema({
 
 
 const ProductSchema = new mongoose.Schema({
-    name: {
+    product_name: {
         type: String,
         trim: true,
         required: true,
+    },
+    upc: {
+        type: String,
+        trim: true,
+    },
+    sku: {
+        type: String,
+        trim: true,
+    },
+    upcBox: {
+        type: String,
+        trim: true,
+    },
+    cost: {
+        type: Number,
+        trim: true,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         trim: true,
         required: true,
-        ref: 'User'
+        ref: 'Employee'
     },
     development_id: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'Development',
         required: true
     },
@@ -96,6 +111,10 @@ const ProductSchema = new mongoose.Schema({
     },
     imageAlterText: {
         type: String,
+        trim: true,
+    },
+    saleing_Price: {
+        type: Number,
         trim: true,
     },
     price: [productPrices],

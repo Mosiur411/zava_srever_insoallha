@@ -6,7 +6,7 @@ const Auth_Rqeuired = async (req, res, next) => {
         const { authorization } = req.headers
         if (!authorization) return res.status(401).json({ error: 'Authentication Required.' })
         const token = authorization.split('Bearer ')[1]
-        const { uid, email, email_verified} = await getAuth().verifyIdToken(token)
+        const { uid, email, email_verified } = await getAuth().verifyIdToken(token)
         if (!uid) return res.status(401).json({ error: 'Unauthorized User' })
         if (!email_verified) return res.status(401).json({ error: 'User is not Verif email' })
         const user = await getUserByEmail(email)

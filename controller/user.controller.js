@@ -2,12 +2,13 @@ const { default: mongoose } = require("mongoose");
 const { errorMessageFormatter } = require("../utils/helpers");
 const { UserModel } = require("../model/user.model");
 const { getAuth } = require("firebase-admin/auth");
+const { EmployeeModel } = require("./employee.model");
 
 
 /* get data */
 const getUserByEmail = async (email) => {
     try {
-        const user = await UserModel.findOne({ email })
+        const user = await EmployeeModel.findOne({ email })
         return user
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)

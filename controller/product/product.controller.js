@@ -6,6 +6,18 @@ const { doesDepartmentExist } = require("./development.controller");
 const addProduct = async (req, res) => {
     try {
         const data = req.body;
+        if (data?.development_id == '') {
+            delete data?.development_id;
+        }
+        if (data?.categorie_id == '') {
+            delete data?.categorie_id;
+        }
+        if (data?.sub_id == '') {
+            delete data?.sub_id;
+        }
+        if (data?.childSub_id == '') {
+            delete data?.childSub_id;
+        }
         const product = await ProductModel.create({ ...data, user: req.user._id })
         return res.status(201).json({ product })
     } catch (err) {
@@ -56,22 +68,60 @@ const addBulkProduct = async (req, res) => {
         return res.status(500).json(errorMessage)
     }
 }
-
 const getProduct = async (req, res) => {
+    const { _id } = req.query
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const searchQuery = req.query.search;
     try {
-        const product = await ProductModel.find({}).sort({ _id: -1 }).populate(['development_id', 'user'])
-        return res.status(201).json({ product })
+        if (_id) {
+            const product = await ProductModel.findById(_id).populate(['development_id', 'categorie_id', 'sub_id', 'childSub_id', 'user'])
+            return res.status(200).json({ product })
+        }
+        const sanitizedSearchQuery = searchQuery.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+        const search = new RegExp(sanitizedSearchQuery, 'i');
+        const totalProduct = await ProductModel.countDocuments();
+        let totalPages = Math.ceil(totalProduct / limit);
+        const skip = page * limit;
+        if (searchQuery && search) {
+            const product = await ProductModel.find({
+                "$or": [{ product_name: { $regex: search } }, { upc: { $regex: search } }, { upcBox: { $regex: search } }]
+            }).populate(['development_id', 'categorie_id', 'sub_id', 'childSub_id', 'user']).sort({ _id: -1 }).skip(skip).limit(limit)
+            totalPages = product.length;
+            return res.status(200).json({ product, totalPages })
+        }
+        const product = await ProductModel.find({}).sort({ _id: -1 }).populate(['development_id', 'categorie_id', 'sub_id', 'childSub_id', 'user']).skip(skip).limit(limit)
+        return res.status(201).json({ product, totalPages })
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)
         return res.status(500).json(errorMessage)
     }
-
 }
-const updateProduct = async (req, res) => { }
+const updateProduct = async (req, res) => {
+    const data = req.body;
+    if (data?.development_id == '') {
+        delete data?.development_id;
+    }
+    if (data?.categorie_id == '') {
+        delete data?.categorie_id;
+    }
+    if (data?.sub_id == '') {
+        delete data?.sub_id;
+    }
+    if (data?.childSub_id == '') {
+        delete data?.childSub_id;
+    }
+    const { _id } = req.query;
+
+    if (!_id) return res.status(400).json({ Message: 'Product  Not select ' });
+    const product = await ProductModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+    return res.status(201).json({ product })
+}
+
 const deleteProduct = async (req, res) => {
     try {
         const { _id } = req.query;
-        const product = await ProductModel.deleteOne(_id);
+        const product = await ProductModel.deleteOne({ _id: _id })
         return res.status(201).json({ product })
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)

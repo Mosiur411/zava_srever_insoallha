@@ -73,7 +73,6 @@ const ProductSchema = new mongoose.Schema({
     development_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Development',
-        required: true
     },
     categorie_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -95,7 +94,7 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         trim: true,
     },
-    inStock: {
+    stock: {
         type: Number,
         trim: true,
     },

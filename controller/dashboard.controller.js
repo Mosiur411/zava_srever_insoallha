@@ -65,6 +65,7 @@ const getRrecord = async (req, res) => {
 
 
         const payment = await OrderModel.aggregate([
+            ...pipeline,
             {
                 $group: {
                     _id: "$payment",

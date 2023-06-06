@@ -64,20 +64,20 @@ const getRrecord = async (req, res) => {
         ])
 
 
-        const payment = await  OrderModel.aggregate([
+        const payment = await OrderModel.aggregate([
             {
                 $group: {
                     _id: "$payment",
                     totalAmount: { $sum: "$totalPrice" }
                 }
             }
-         ], 
+        ],
         );
 
 
 
 
-        return res.status(200).json({ products: product, sales: sale, payment })
+        return res.status(200).json({ products: product, sales: sale, payment: payment })
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)
         return res.status(500).json(errorMessage)

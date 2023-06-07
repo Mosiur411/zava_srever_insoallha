@@ -94,7 +94,7 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         trim: true,
     },
-    stock: {
+    unitGross: {
         type: Number,
         trim: true,
     },

@@ -10,7 +10,6 @@ const { subCategoriesRoutes } = require('./routes/product/subCategoties.router')
 const { childsubRoutes } = require('./routes/product/childSubCategories.router')
 const { productRoutes } = require('./routes/product/product.router')
 const { backupRoutes } = require('./config/backup.config')
-const { exec } = require('child_process');
 const { dashboardRoutes } = require('./routes/dashboard.routes')
 
 require('dotenv').config()
@@ -40,24 +39,6 @@ app.use('/dashboard', Auth_Rqeuired, dashboardRoutes)
 const backupDirectory = '/path/to/backup/directory';
 /* Database backup  */
 /* app.use('/backup', backupRoutes) */
-// app.get('/download', (req, res) => {
-//     const backupFileName = 'backup_file_name'; 
-//     const backupFilePath = `${backupDirectory}/${backupFileName}`;
-
-//     exec(`mongodump --out ${backupDirectory}`, (error) => {
-//       if (error) {
-//         return res.status(500).json({ error: 'Backup failed.' });
-//       }
-
-//       res.download(backupFilePath, backupFileName, (downloadError) => {
-//         if (downloadError) {
-//           console.error('Download failed:', downloadError);
-//           return res.status(500).json({ error: 'Download failed.' });
-//         }
-//       });
-//     });
-//   });
-
 
 
 // database

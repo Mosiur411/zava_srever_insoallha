@@ -11,6 +11,7 @@ const { childsubRoutes } = require('./routes/product/childSubCategories.router')
 const { productRoutes } = require('./routes/product/product.router')
 const { backupRoutes } = require('./config/backup.config')
 const { dashboardRoutes } = require('./routes/dashboard.routes')
+const { seoRoutes } = require('./routes/seo.router')
 
 require('dotenv').config()
 const app = express()
@@ -34,6 +35,8 @@ app.use('/product', Auth_Rqeuired, productRoutes)
 
 /* ============= dashboard =============*/
 app.use('/dashboard', Auth_Rqeuired, dashboardRoutes)
+/* website seo ==============  */
+app.use('/seo', Auth_Rqeuired, seoRoutes)
 
 
 const backupDirectory = '/path/to/backup/directory';

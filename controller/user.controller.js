@@ -2,8 +2,7 @@ const { default: mongoose } = require("mongoose");
 const { errorMessageFormatter } = require("../utils/helpers");
 const { UserModel } = require("../model/user.model");
 const { getAuth } = require("firebase-admin/auth");
-const { EmployeeModel } = require("./employee.model");
-
+const {EmployeeModel}= require("../model/employee.model");
 
 /* get data */
 const getUserByEmail = async (email) => {

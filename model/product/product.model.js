@@ -140,9 +140,11 @@ const ProductSchema = new mongoose.Schema({
     product_ditails: {
         type: String,
         trim: true,
+    },
+    stock: {
+        type: Number,
+        trim: true,
     }
-
-
 }, { timestamps: true })
 module.exports = {
     ProductModel: mongoose.model('Product', ProductSchema),

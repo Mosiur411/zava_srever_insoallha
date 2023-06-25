@@ -25,7 +25,13 @@ app.use(express.json())
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
-/* route    childSubCategories */
+
+/* ============= dashboard =============*/
+app.use('/dashboard', Auth_Rqeuired, dashboardRoutes)
+
+
+
+/*product */
 app.use('/', userRoutes)
 app.use('/development', Auth_Rqeuired, developmentRoutes)
 app.use('/categories', Auth_Rqeuired, categoriesRoutes)
@@ -33,10 +39,12 @@ app.use('/subCategories', Auth_Rqeuired, subCategoriesRoutes)
 app.use('/childSubCategories', Auth_Rqeuired, childsubRoutes)
 app.use('/product', Auth_Rqeuired, productRoutes)
 
-/* ============= dashboard =============*/
-app.use('/dashboard', Auth_Rqeuired, dashboardRoutes)
-/* website seo ==============  */
+/* website seo   */
 app.use('/seo', Auth_Rqeuired, seoRoutes)
+
+/*  brand  */
+app.use('/brand', Auth_Rqeuired, seoRoutes)
+
 
 
 const backupDirectory = '/path/to/backup/directory';

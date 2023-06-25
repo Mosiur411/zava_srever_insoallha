@@ -1,31 +1,36 @@
 const { default: mongoose } = require("mongoose");
 const { ProductModel } = require("../model/product/product.model");
 const { OrderModel } = require("../model/order.model");
+const { PurchasesModel } = require("../model/purchase");
 
 const getRrecord = async (req, res) => {
     try {
         const { _id, role } = req.user
         const isAdmin = role == 'admin' ? true : false
-        const product = await ProductModel.aggregate([
+        const product = await PurchasesModel.aggregate([
             {
                 $group: {
                     _id: 1,
-                    price: {
-                        $sum: '$saleing_Price'
-                    },
                     quantity: {
                         $sum: '$quantity'
                     },
+                    stock: {
+                        $sum: '$stock'
+                    },
                     cost: {
                         $sum: { $multiply: ["$quantity", "$cost"] }
+                    },
+                    totalCost: {
+                        $sum: { $multiply: ["$stock", "$cost"] }
                     },
                 }
             },
             {
                 $project: {
                     cost: true,
-                    price: true,
-                    quantity: true
+                    stock: true,
+                    quantity: true,
+                    totalCost: true,
                 }
             }
         ])

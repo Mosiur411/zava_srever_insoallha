@@ -3,6 +3,7 @@ const { errorMessageFormatter, getDataFromCsv } = require("../../utils/helpers")
 const { ProductModel } = require("../../model/product/product.model");
 const { validateObjectId } = require("../../utils/validators");
 const { doesDepartmentExist } = require("./development.controller");
+const { PurchasesModel } = require("../../model/purchase");
 const addProduct = async (req, res) => {
     try {
         const data = req.body;
@@ -18,7 +19,10 @@ const addProduct = async (req, res) => {
         if (data?.childSub_id == '') {
             delete data?.childSub_id;
         }
-        const product = await ProductModel.create({ ...data, user: req.user._id })
+        const product = await ProductModel({ ...data, user: req.user._id })
+        product.stock = product?.quantity
+        await PurchasesModel.create({ product_id: product?._id, quantity: product?.quantity, cost: product?.cost, user: req.user._id, stock: product?.stock, status: true })
+        product.save()
         return res.status(201).json({ product })
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)
@@ -98,6 +102,7 @@ const getProduct = async (req, res) => {
     }
 }
 const updateProduct = async (req, res) => {
+    let product;
     const data = req.body;
     if (data?.development_id == '') {
         delete data?.development_id;
@@ -112,9 +117,25 @@ const updateProduct = async (req, res) => {
         delete data?.childSub_id;
     }
     const { _id } = req.query;
-
     if (!_id) return res.status(400).json({ Message: 'Product  Not select ' });
-    const product = await ProductModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+    let purchaseUpdate = await PurchasesModel.findOne({ product_id: _id, status: true })
+    if (!purchaseUpdate?._id) return res.status(201).json({ message: 'Purchases Product Not Update' })
+    purchaseUpdate.cost = data?.cost
+    if (data?.quantity_action === '+') {
+        data.quantity = Number(data.quantity) + Number(data?.new_quantity)
+        data.stock = Number(data.stock) + Number(data?.new_quantity)
+        purchaseUpdate.stock = Number(purchaseUpdate?.stock) + Number(data?.new_quantity)
+        purchaseUpdate.quantity = Number(purchaseUpdate?.quantity) + Number(data?.new_quantity)
+    }
+    if (data?.quantity_action === '-') {
+        data.quantity = Number(data.quantity) - Number(data?.new_quantity)
+        data.stock = Number(data.stock) - Number(data?.new_quantity)
+        purchaseUpdate.stock = Number(purchaseUpdate?.stock) - Number(data?.new_quantity)
+        purchaseUpdate.quantity = Number(purchaseUpdate?.quantity) - Number(data?.new_quantity)
+    }
+    product = await ProductModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+    await PurchasesModel.findOneAndUpdate({ _id: purchaseUpdate?._id }, { ...purchaseUpdate }, { new: true })
+
     return res.status(201).json({ product })
 }
 
@@ -122,13 +143,11 @@ const deleteProduct = async (req, res) => {
     try {
         const { _id } = req.query;
         const product = await ProductModel.deleteOne({ _id: _id })
+        await PurchasesModel.deleteOne({ product_id: _id })
         return res.status(201).json({ product })
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)
         return res.status(500).json(errorMessage)
     }
-
-
-
 }
 module.exports = { addProduct, getProduct, updateProduct, deleteProduct, addBulkProduct }

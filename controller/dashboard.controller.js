@@ -2,9 +2,13 @@ const { default: mongoose } = require("mongoose");
 const { ProductModel } = require("../model/product/product.model");
 const { OrderModel } = require("../model/order.model");
 const { PurchasesModel } = require("../model/purchase");
+const { SalesModel } = require("../model/sales.model");
+const { errorMessageFormatter } = require("../utils/helpers");
 
 const getRrecord = async (req, res) => {
     try {
+        let invoicTotal = 0;
+        let totalDue = 0;
         const { _id, role } = req.user
         const isAdmin = role == 'admin' ? true : false
         const product = await PurchasesModel.aggregate([
@@ -45,7 +49,7 @@ const getRrecord = async (req, res) => {
             ];
         }
 
-        const sale = await OrderModel.aggregate([
+        const sale = await SalesModel.aggregate([
             ...pipeline,
             {
                 $unwind: "$item"
@@ -69,7 +73,7 @@ const getRrecord = async (req, res) => {
         ])
 
 
-        const payment = await OrderModel.aggregate([
+        let payment = await SalesModel.aggregate([
             ...pipeline,
             {
                 $group: {
@@ -81,9 +85,21 @@ const getRrecord = async (req, res) => {
         );
 
 
+        for (const item of payment) {
+            if (item._id !== 'due') {
+                invoicTotal += item.totalAmount;
+            } else {
+                totalDue += item.totalAmount;
+            }
+        }
+        payment = { totalInvoic: invoicTotal, totalDue: totalDue }
 
+        /* dashboard handel   */
 
-        return res.status(200).json({ products: product, sales: sale, payment: payment })
+        const dashboard = {
+            grossProfit: (Number(sale[0]?.total) + Number(product[0]?.cost)) - Number(product[0]?.totalCost),
+        }
+        return res.status(200).json({ products: product, sales: sale, payment: payment, dashboard: dashboard })
     } catch (err) {
         const errorMessage = errorMessageFormatter(err)
         return res.status(500).json(errorMessage)

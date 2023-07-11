@@ -4,14 +4,37 @@ const { OrderModel } = require("../model/order.model");
 const { PurchasesModel } = require("../model/purchase");
 const { SalesModel } = require("../model/sales.model");
 const { errorMessageFormatter } = require("../utils/helpers");
+const moment = require("moment/moment");
 
 const getRrecord = async (req, res) => {
     try {
         let invoicTotal = 0;
         let totalDue = 0;
+        let { fromDate, toDate } = req.query;
+        fromDate = fromDate == 'undefined' ? new Date() : fromDate;
+        toDate = toDate == 'undefined' ? new Date() : toDate;
+        var fromDateHandel = new Date(fromDate);
+        var toDateHandel = new Date(toDate);
+        fromDate = moment(fromDateHandel).startOf('day').toDate()
+        toDate = moment(toDateHandel).endOf('day').toDate()
+        let reportOptions = {
+            filter: {
+                createdAt: {
+                    $gte: fromDate,
+                    $lte: toDate
+                }
+            },
+            sort: {
+                createdAt: -1,
+            }
+        }
+
+
         const { _id, role } = req.user
         const isAdmin = role == 'admin' ? true : false
         const product = await PurchasesModel.aggregate([
+            { $match: reportOptions.filter },
+            { $sort: reportOptions.sort },
             {
                 $group: {
                     _id: 1,
@@ -50,6 +73,8 @@ const getRrecord = async (req, res) => {
         }
 
         const sale = await SalesModel.aggregate([
+            { $match: reportOptions.filter },
+            { $sort: reportOptions.sort },
             ...pipeline,
             {
                 $unwind: "$item"
@@ -74,6 +99,8 @@ const getRrecord = async (req, res) => {
 
 
         let payment = await SalesModel.aggregate([
+            { $match: reportOptions.filter },
+            { $sort: reportOptions.sort },
             ...pipeline,
             {
                 $group: {

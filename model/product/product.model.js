@@ -117,6 +117,16 @@ const ProductSchema = new mongoose.Schema({
         trim: true,
     },
     price: [productPrices],
+    retailer_saleing_Price: {
+        type: Number,
+        trim: true,
+    },
+    retailer_price: [productPrices],
+    wholesaler_saleing_Price: {
+        type: Number,
+        trim: true,
+    },
+    wholesaler_price: [productPrices],
     tag: {
         type: String,
         trim: true,

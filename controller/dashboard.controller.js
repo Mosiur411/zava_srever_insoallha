@@ -23,9 +23,6 @@ const getRrecord = async (req, res) => {
                     $gte: fromDate,
                     $lte: toDate
                 }
-            },
-            sort: {
-                createdAt: -1,
             }
         }
 
@@ -34,7 +31,6 @@ const getRrecord = async (req, res) => {
         const isAdmin = role == 'admin' ? true : false
         const product = await PurchasesModel.aggregate([
             { $match: reportOptions.filter },
-            { $sort: reportOptions.sort },
             {
                 $group: {
                     _id: 1,
@@ -74,7 +70,6 @@ const getRrecord = async (req, res) => {
 
         const sale = await SalesModel.aggregate([
             { $match: reportOptions.filter },
-            { $sort: reportOptions.sort },
             ...pipeline,
             {
                 $unwind: "$item"
@@ -100,7 +95,6 @@ const getRrecord = async (req, res) => {
 
         let payment = await SalesModel.aggregate([
             { $match: reportOptions.filter },
-            { $sort: reportOptions.sort },
             ...pipeline,
             {
                 $group: {

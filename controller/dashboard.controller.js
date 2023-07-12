@@ -17,16 +17,19 @@ const getRrecord = async (req, res) => {
         var toDateHandel = new Date(toDate);
         fromDate = moment(fromDateHandel).startOf('day').toDate()
         toDate = moment(toDateHandel).endOf('day').toDate()
+
         let reportOptions = {
             filter: {
                 createdAt: {
                     $gte: fromDate,
                     $lte: toDate
+                },
+                updatedAt: {
+                    $gte: fromDate,
+                    $lte: toDate
                 }
             }
         }
-
-
         const { _id, role } = req.user
         const isAdmin = role == 'admin' ? true : false
         const product = await PurchasesModel.aggregate([
@@ -67,7 +70,6 @@ const getRrecord = async (req, res) => {
                 },
             ];
         }
-
         const sale = await SalesModel.aggregate([
             { $match: reportOptions.filter },
             ...pipeline,
@@ -104,8 +106,9 @@ const getRrecord = async (req, res) => {
             }
         ],
         );
-
-
+        console.log(sale)
+        console.log(payment)
+        console.log(reportOptions)
         for (const item of payment) {
             if (item._id !== 'due') {
                 invoicTotal += item.totalAmount;

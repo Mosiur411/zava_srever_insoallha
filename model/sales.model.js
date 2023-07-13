@@ -31,12 +31,6 @@ const SalesSchema = new mongoose.Schema({
             required: true,
             ref: 'User'
         },
-        purchases_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            trim: true,
-            required: true,
-            ref: 'Purchases'
-        },
     }],
     payment: {
         type: String,

@@ -33,7 +33,6 @@ const getRrecord = async (req, res) => {
         const { _id, role } = req.user
         const isAdmin = role == 'admin' ? true : false
         const product = await PurchasesModel.aggregate([
-            { $match: reportOptions.filter },
             {
                 $group: {
                     _id: 1,
@@ -70,6 +69,8 @@ const getRrecord = async (req, res) => {
                 },
             ];
         }
+
+        let GrossProfitSlea = 0
         const sale = await SalesModel.aggregate([
             { $match: reportOptions.filter },
             ...pipeline,
@@ -82,19 +83,36 @@ const getRrecord = async (req, res) => {
                     quantity: {
                         $sum: "$item.quantity"
                     },
-                    total: { $sum: "$item.saleing_Price" }
+                    total: { $sum: "$item.saleing_Price" },
+                    purchases_ids: { $push: { purchases_id: "$item.purchases_id", quantity: "$item.quantity" } },
+
                 }
             },
             {
                 $project: {
                     quantity: true,
                     total: true,
+                    purchases_ids: true,
                 }
             }
 
         ])
 
+        /* total sele handel  */
 
+        if (sale[0]?.purchases_ids) {
+            const promises = sale[0].purchases_ids.map(async (data) => {
+                const GrossPrices = await PurchasesModel.findById(data.purchases_id);
+                return GrossPrices;
+            });
+
+            const resolvedPromises = await Promise.all(promises);
+
+            GrossProfitSlea = resolvedPromises.reduce((total, data, index) => {
+                const quantity = sale[0].purchases_ids[index].quantity;
+                return total + data?.cost * quantity;
+            }, 0);
+        }
         let payment = await SalesModel.aggregate([
             { $match: reportOptions.filter },
             ...pipeline,
@@ -106,9 +124,7 @@ const getRrecord = async (req, res) => {
             }
         ],
         );
-        console.log(sale)
-        console.log(payment)
-        console.log(reportOptions)
+
         for (const item of payment) {
             if (item._id !== 'due') {
                 invoicTotal += item.totalAmount;
@@ -118,10 +134,9 @@ const getRrecord = async (req, res) => {
         }
         payment = { totalInvoic: invoicTotal, totalDue: totalDue }
 
-        /* dashboard handel   */
 
         const dashboard = {
-            grossProfit: (Number(sale[0]?.total) + Number(product[0]?.cost)) - Number(product[0]?.totalCost),
+            grossProfit: sale[0]?.total-GrossProfitSlea,
         }
         return res.status(200).json({ products: product, sales: sale, payment: payment, dashboard: dashboard })
     } catch (err) {

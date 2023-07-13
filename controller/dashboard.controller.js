@@ -15,7 +15,7 @@ const getRrecord = async (req, res) => {
         toDate = toDate == 'undefined' ? new Date() : toDate;
         var fromDateHandel = new Date(fromDate);
         var toDateHandel = new Date(toDate);
-        fromDate = moment(fromDateHandel).add(1,'day').startOf('day').toDate()
+        fromDate = moment(fromDateHandel).startOf('day').toDate()
         toDate = moment(toDateHandel).endOf('day').toDate()
 
         let reportOptions = {
